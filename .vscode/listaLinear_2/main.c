@@ -55,7 +55,7 @@ int buscaSequencialLista(LISTA* lista, TIPOCHAVE chave) {
   return -1;
 }
 
-// BUSCA POR ELEMENTO DE FORMA OTIMIZADA (SENTINELA)
+// BUSCA POR ELEMENTO DE FORMA SEQUENCIAL OTIMIZADA (SENTINELA)
 int buscaSentinela(LISTA* lista, TIPOCHAVE chave) {
   int i = 0;
   lista->A[lista->nroElem].chave = chave;
@@ -63,6 +63,23 @@ int buscaSentinela(LISTA* lista, TIPOCHAVE chave) {
   while(lista->A[i].chave != chave) i++;
   if (i == lista->nroElem) return -1;
   else return i;
+}
+
+//BUSCA POR ELEMENTO DE FORMA BINÁRIA
+int buscaBinaria(LISTA* lista, TIPOCHAVE chave) {
+  int esq, dir, meio;
+  esq = 0;
+  dir = lista->nroElem - 1;
+
+  while (esq <= dir) {
+    meio = ((esq + dir) / 2);
+    if (chave == lista->A[meio].chave) return meio;
+    else {
+      if (lista->A[meio].chave < chave) esq = meio + 1;
+      else dir = meio - 1;
+    }
+  }
+  return -1;
 }
 
 
