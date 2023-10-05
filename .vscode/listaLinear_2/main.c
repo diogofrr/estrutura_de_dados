@@ -1,8 +1,14 @@
+// #2 - OTIMIZAÇÃO DO CONTEÚDO APRENDIDO NA AULA 1 DE LISTA LINEAR
+
+#include <stdio.h>
+
 // TAMANHO PRÉ DEFINIDO DE ELEMENTOS DA ESTRUTURA
 #define MAX 50
 
 // RENOMEIA O TIPO INT PARA "TIPOCHAVE"
 typedef int TIPOCHAVE;
+
+// CRIA O VALOR BOOLEANO
 typedef int bool;
 enum { false, true };
 
@@ -13,7 +19,7 @@ typedef struct {
 
 // ARRANJO DOS REGISTROS COM TAMANHO MAX E O NÚMERO DE ELEMENTOS
 typedef struct {
-  REGISTRO A[MAX];
+  REGISTRO A[MAX+1];
   int nroElem;
 } LISTA;
 
@@ -49,10 +55,21 @@ int buscaSequencialLista(LISTA* lista, TIPOCHAVE chave) {
   return -1;
 }
 
+// BUSCA POR ELEMENTO DE FORMA OTIMIZADA (SENTINELA)
+int buscaSentinela(LISTA* lista, TIPOCHAVE chave) {
+  int i = 0;
+  lista->A[lista->nroElem].chave = chave;
+
+  while(lista->A[i].chave != chave) i++;
+  if (i == lista->nroElem) return -1;
+  else return i;
+}
+
+
 // INSERE UM ELEMENTO EM UMA POSIÇÃO ESPECÍFICA E JOGA OS OUTROS ELEMENTOS UMA POSIÇÃO A FRENTE
 bool inserirElemLista(LISTA* lista, REGISTRO registro, int indice) {
   int indiceIt;
-  if ((lista->nroElem == 50) || (indice < 0) || (indice > lista->nroElem))
+  if ((lista->nroElem == MAX) || (indice < 0) || (indice > lista->nroElem))
     return false;
 
   for (indiceIt = lista->nroElem; indiceIt > indice; indiceIt--) {
@@ -62,6 +79,21 @@ bool inserirElemLista(LISTA* lista, REGISTRO registro, int indice) {
   lista->A[indice] = registro;
   lista->nroElem++;
   return true;
+}
+
+// INSERÇÃO DE ELEMENTOS DE FORMA ORDENADA
+bool inserirElemListaOrd(LISTA* lista, REGISTRO registro) {
+  if (lista->nroElem >= MAX) return false;
+
+  int pos = lista->nroElem;
+
+  while(pos > 0 && lista->A[pos-1].chave > registro.chave) {
+    lista->A[pos] = lista->A[pos-1];
+    pos--;
+  }
+
+  lista->A[pos] = registro;
+  lista->nroElem++;
 }
 
 // EXCLUI UM ELEMENTO ESPECÍFICO DA LISTA
@@ -82,4 +114,37 @@ bool excluirElemento(TIPOCHAVE chave, LISTA* lista) {
 // DEFINE QUE O NÚMERO DE ELEMENTOS VÁLIDOS NA LISTA É 0 PARA FALSAMENTE REINICIALIZAR A LISTA
 void reinicializarLista(LISTA* lista) {
   lista->nroElem = 0;
+}
+
+int main() {
+  LISTA lista; 
+
+  int num = 0;
+  REGISTRO pos;
+  
+  bool elemExcluido = false;
+  int chaveLocalizada;
+
+  pos.chave = 2;
+
+  // INICIALIZANDO A LISTA
+  inicializarLista(&lista);
+  printf("Lista inicializada!");
+  printf("\n----------------------------\n");
+  printf("Elemento adicionado na posicao: %i", pos);
+  inserirElemLista(&lista, pos, num);
+  printf("\n----------------------------\n");
+  printf("Tamanho da lista: %i", lista.nroElem);
+  printf("\n----------------------------\n");
+  exibirLista(&lista);
+  printf("\n----------------------------\n");
+  chaveLocalizada = buscaSequencialLista(&lista, pos.chave);
+  printf("Posicao do elemento especifico: %i", chaveLocalizada);
+  printf("\n----------------------------\n");
+  elemExcluido = excluirElemento(2, &lista);
+  printf("Elemento excluido: ");
+  printf(elemExcluido == true ? "Sim - (%i)" : "Nao - (%i)", lista.nroElem);
+  printf("\n============================\n");
+
+  return 0;
 }
